@@ -1,0 +1,16 @@
+package routes
+
+import (
+	"github.com/gin-gonic/gin"
+	services "github.com/goylold/lowcode/services"
+)
+
+func {{.TableName}}RouterRegistry(engine *gin.Engine) {
+	group := engine.Group("/{{.TableName}}")
+	{
+		group.POST("/list", services.{{.TableName}}List)
+		group.POST("/add", services.{{.TableName}}Add)
+		group.POST("/update", services.{{.TableName}}Update)
+		group.POST("/delete/:id", services.{{.TableName}}Delete)
+	}
+}
