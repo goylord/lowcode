@@ -7,9 +7,9 @@ import (
 	"github.com/goylold/lowcode/models"
 )
 
-const TableEntityTableName = "TableEntity"
+const DictTableName = "Dict"
 
-func TableEntityList(c *gin.Context) {
+func DictList(c *gin.Context) {
 	engine := databases.GetXormEngine()
 	var requestParams common.Request
 	err := c.ShouldBindJSON(&requestParams)
@@ -17,13 +17,13 @@ func TableEntityList(c *gin.Context) {
 		common.ResultError(500, err.Error(), c)
 		return
 	}
-	var tableEntities []models.TableEntity
-	err = requestParams.DisposeRequest(engine.Table(TableEntityTableName)).Find(&tableEntities)
+	var tableEntities []models.Dict
+	err = requestParams.DisposeRequest(engine.Table(DictTableName)).Find(&tableEntities)
 	if err != nil {
 		common.ResultError(500, err.Error(), c)
 		return
 	}
-	count, err := requestParams.DisposeRequest(engine.Table(TableEntityTableName)).Count()
+	count, err := requestParams.DisposeRequest(engine.Table(DictTableName)).Count()
 	if err != nil {
 		common.ResultError(500, err.Error(), c)
 		return
@@ -31,8 +31,8 @@ func TableEntityList(c *gin.Context) {
 	common.ResultSuccessList(tableEntities, count, c)
 }
 
-func TableEntityAdd(c *gin.Context) {
-	var table models.TableEntity
+func DictAdd(c *gin.Context) {
+	var table models.Dict
 	err := c.ShouldBindJSON(&table)
 	if err != nil {
 		common.ResultError(500, err.Error(), c)
@@ -46,8 +46,8 @@ func TableEntityAdd(c *gin.Context) {
 	common.ResultSuccess(table, c)
 }
 
-func TableEntityUpdate(c *gin.Context) {
-	var table models.TableEntity
+func DictUpdate(c *gin.Context) {
+	var table models.Dict
 	err := c.ShouldBindJSON(&table)
 	if err != nil {
 		common.ResultError(500, err.Error(), c)
@@ -65,8 +65,8 @@ func TableEntityUpdate(c *gin.Context) {
 	common.ResultSuccess(table, c)
 }
 
-func TableEntityDelete(c *gin.Context) {
-	var table models.TableEntity
+func DictDelete(c *gin.Context) {
+	var table models.Dict
 	id := c.Param("id")
 	if id == "" {
 		common.ResultError(500, "Id不能为空", c)
@@ -81,8 +81,8 @@ func TableEntityDelete(c *gin.Context) {
 	common.ResultSuccess(table, c)
 }
 
-func TableEntityGetOne(c *gin.Context) {
-	var table models.TableEntity
+func DictGetOne(c *gin.Context) {
+	var table models.Dict
 	id := c.Param("id")
 	if id == "" {
 		common.ResultError(500, "Id不能为空", c)

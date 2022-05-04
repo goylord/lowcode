@@ -6,10 +6,10 @@ import (
 )
 
 func TableEntityRouterRegistry(engine *gin.Engine) {
-	group := engine.Group("/tableEntity")
+	group := engine.Group("/TableEntity")
 	{
 		group.POST("/list", services.TableEntityList)
-		group.POST("/add", services.TableEntityLAdd)
+		group.POST("/add", services.TableEntityAdd)
 		group.POST("/update", services.TableEntityUpdate)
 		group.POST("/delete/:id", services.TableEntityDelete)
 		group.POST("/get/:id", services.TableEntityGetOne)

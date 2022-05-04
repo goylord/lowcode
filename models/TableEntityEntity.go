@@ -9,17 +9,28 @@ import (
 	"github.com/goylold/lowcode/utils"
 )
 
-const tableName string = "TableEntity"
+const TableEntityTableName string = "TableEntity"
 
 type TableEntity struct {
-	CreatedBy   string `form:"created_by" json:"created_by"`
-	CreatedTime string `form:"created_time" json:"created_time"`
-	UpdatedBy   string `form:"updated_by" json:"updated_by"`
-	UpdatedTime string `form:"updated_time" json:"updated_time"`
-	Id          string `form:"id" json:"id"`
-	Name        string `form:"name" json:"name" binding:"required"`
-	Code        string `form:"code" json:"code" binding:"required"`
-	Remark      string `form:"remark" json:"remark"`
+  
+  Code string `form:"code" json:"code"`
+  
+  CreatedBy string `form:"created_by" json:"created_by"`
+  
+  CreatedTime string `form:"created_time" json:"created_time"`
+  
+  Id string `form:"id" json:"id"`
+  
+  Name string `form:"name" json:"name"`
+  
+  Remark string `form:"remark" json:"remark"`
+  
+  Revision int64 `form:"revision" json:"revision"`
+  
+  UpdatedBy string `form:"updated_by" json:"updated_by"`
+  
+  UpdatedTime string `form:"updated_time" json:"updated_time"`
+  
 }
 
 func (table *TableEntity) Add() error {
@@ -29,7 +40,7 @@ func (table *TableEntity) Add() error {
 	table.UpdatedTime = carbon.Now().ToDateTimeString()
 	table.CreatedBy = common.GetCurrentUser()
 	table.UpdatedBy = common.GetCurrentUser()
-	_, err := engine.Table(tableName).Insert(&table)
+	_, err := engine.Table(TableEntityTableName).Insert(&table)
 	if err != nil {
 		return err
 	}
@@ -42,7 +53,7 @@ func (table *TableEntity) Update() error {
 	table.CreatedTime = ""
 	table.UpdatedTime = carbon.Now().ToDateTimeString()
 	table.UpdatedBy = common.GetCurrentUser()
-	_, err := engine.Table(tableName).Where("id = ?", table.Id).Update(table)
+	_, err := engine.Table(TableEntityTableName).Where("id = ?", table.Id).Update(table)
 	if err != nil {
 		return err
 	}
@@ -51,7 +62,7 @@ func (table *TableEntity) Update() error {
 
 func (table *TableEntity) Delete() error {
 	engine := databases.GetXormEngine()
-	affected, err := engine.Table(tableName).Where("id = ?", table.Id).Delete()
+	affected, err := engine.Table(TableEntityTableName).Where("id = ?", table.Id).Delete()
 	if affected == 0 {
 		return errors.New("没有找到删除的数据")
 	}
@@ -63,7 +74,7 @@ func (table *TableEntity) Delete() error {
 
 func (table *TableEntity) GetOne(id string) error {
 	engine := databases.GetXormEngine()
-	_, err := engine.Table(tableName).Where("id = ?", id).Desc("id").Get(table)
+	_, err := engine.Table(TableEntityTableName).Where("id = ?", id).Desc("id").Get(table)
 	if err != nil {
 		return err
 	}
