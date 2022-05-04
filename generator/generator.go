@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/goylold/lowcode/databases"
@@ -22,6 +23,7 @@ type Field struct {
 	FieldType  string
 	SourceName string
 	Required   bool
+	Conditions string
 }
 
 var TypeMap map[string]string = map[string]string{
@@ -34,12 +36,13 @@ func GeneratorCode() {
 
 }
 
-func GeneratorByDatabase() {
+func GeneratorByDatabase() (string, error) {
 	engine := databases.GetXormEngine()
 	results, err := engine.SQL("show tables").QueryString()
+	var routes []string
 	if err != nil {
 		log.Println(err.Error())
-		return
+		return "", err
 	}
 	engineTableInfo := databases.GetTableInfoEngine()
 	for _, tableInfoName := range results {
@@ -47,8 +50,10 @@ func GeneratorByDatabase() {
 		if tableName == "" {
 			continue
 		}
-		modelFilePath := "./output/" + tableName + "Entity.go"
-		if utils.IsExists(modelFilePath) {
+		modelFilePath := "./models/" + tableName + "Entity.go"
+		serviceFilePath := "./services/" + tableName + "Service.go"
+		routeFilePath := "./routes/" + tableName + "Route.go"
+		if utils.IsExists(modelFilePath) || utils.IsExists(serviceFilePath) || utils.IsExists(routeFilePath) {
 			continue
 		}
 		fields, err := engineTableInfo.SQL("select * from columns where table_name = ?", tableName).QueryString()
@@ -66,19 +71,21 @@ func GeneratorByDatabase() {
 				fieldType = "string"
 			}
 			isRequired := false
+			conditions := ""
 			if field["COLUMN_NAME"] == "NO" && fieldName != "id" {
 				isRequired = true
+				conditions = ` binding:"required"`
 			}
 			fieldStruct := Field{
 				StructName: utils.Ucfirst(utils.Case2Camel(fieldName)),
 				SourceName: fieldName,
 				FieldType:  fieldType,
 				Required:   isRequired,
+				Conditions: conditions,
 			}
 			TableInfos.Fields = append(TableInfos.Fields, fieldStruct)
 		}
-		serviceFilePath := "./output/" + tableName + "Service.go"
-		routeFilePath := "./output/" + tableName + "Route.go"
+
 		// log.Println(TableInfos)
 		modelFileTmpl, err := ioutil.ReadFile("./template/model.tmpl")
 		if err != nil {
@@ -111,7 +118,7 @@ func GeneratorByDatabase() {
 
 		if err != nil {
 			log.Println(err.Error())
-			return
+			return "", err
 		}
 
 		tpl, err := template.New("model").Parse(string(modelFileTmpl))
@@ -141,5 +148,7 @@ func GeneratorByDatabase() {
 		if err != nil {
 			log.Println(err.Error())
 		}
+		routes = append(routes, TableInfos.TableName+"RouterRegistry(engine)")
 	}
+	return strings.Join(routes, ";"), nil
 }

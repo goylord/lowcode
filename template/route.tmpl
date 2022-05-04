@@ -12,5 +12,6 @@ func {{.TableName}}RouterRegistry(engine *gin.Engine) {
 		group.POST("/add", services.{{.TableName}}Add)
 		group.POST("/update", services.{{.TableName}}Update)
 		group.POST("/delete/:id", services.{{.TableName}}Delete)
+		group.POST("/get/:id", services.{{.TableName}}GetOne)
 	}
 }

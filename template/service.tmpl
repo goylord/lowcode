@@ -31,7 +31,7 @@ func {{.TableName}}List(c *gin.Context) {
 	common.ResultSuccessList(tableEntities, count, c)
 }
 
-func {{.TableName}}LAdd(c *gin.Context) {
+func {{.TableName}}Add(c *gin.Context) {
 	var table models.{{.TableName}}
 	err := c.ShouldBindJSON(&table)
 	if err != nil {
@@ -74,6 +74,21 @@ func {{.TableName}}Delete(c *gin.Context) {
 	}
 	table.Id = id
 	err := table.Delete()
+	if err != nil {
+		common.ResultError(500, err.Error(), c)
+		return
+	}
+	common.ResultSuccess(table, c)
+}
+
+func {{.TableName}}GetOne(c *gin.Context) {
+	var table models.{{.TableName}}
+	id := c.Param("id")
+	if id == "" {
+		common.ResultError(500, "Id不能为空", c)
+		return
+	}
+	err := table.GetOne(id)
 	if err != nil {
 		common.ResultError(500, err.Error(), c)
 		return

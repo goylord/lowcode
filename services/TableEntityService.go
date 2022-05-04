@@ -7,7 +7,7 @@ import (
 	"github.com/goylold/lowcode/models"
 )
 
-const tableName = "TableEntity"
+const TableEntityTableName = "TableEntity"
 
 func TableEntityList(c *gin.Context) {
 	engine := databases.GetXormEngine()
@@ -18,12 +18,12 @@ func TableEntityList(c *gin.Context) {
 		return
 	}
 	var tableEntities []models.TableEntity
-	err = requestParams.DisposeRequest(engine.Table(tableName)).Find(&tableEntities)
+	err = requestParams.DisposeRequest(engine.Table(TableEntityTableName)).Find(&tableEntities)
 	if err != nil {
 		common.ResultError(500, err.Error(), c)
 		return
 	}
-	count, err := requestParams.DisposeRequest(engine.Table(tableName)).Count()
+	count, err := requestParams.DisposeRequest(engine.Table(TableEntityTableName)).Count()
 	if err != nil {
 		common.ResultError(500, err.Error(), c)
 		return
@@ -74,6 +74,21 @@ func TableEntityDelete(c *gin.Context) {
 	}
 	table.Id = id
 	err := table.Delete()
+	if err != nil {
+		common.ResultError(500, err.Error(), c)
+		return
+	}
+	common.ResultSuccess(table, c)
+}
+
+func TableEntityGetOne(c *gin.Context) {
+	var table models.TableEntity
+	id := c.Param("id")
+	if id == "" {
+		common.ResultError(500, "Id不能为空", c)
+		return
+	}
+	err := table.GetOne(id)
 	if err != nil {
 		common.ResultError(500, err.Error(), c)
 		return

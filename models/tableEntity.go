@@ -60,3 +60,12 @@ func (table *TableEntity) Delete() error {
 	}
 	return nil
 }
+
+func (table *TableEntity) GetOne(id string) error {
+	engine := databases.GetXormEngine()
+	_, err := engine.Table(tableName).Where("id = ?", id).Desc("id").Get(table)
+	if err != nil {
+		return err
+	}
+	return nil
+}

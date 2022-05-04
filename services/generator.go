@@ -8,6 +8,10 @@ import (
 
 func GeneratorCode(c *gin.Context) {}
 func GeneratorCodeByDatabase(c *gin.Context) {
-	generator.GeneratorByDatabase()
-	common.ResultSuccess("success", c)
+	results, err := generator.GeneratorByDatabase()
+	if err != nil {
+		common.ResultError(500, err.Error(), c)
+		return
+	}
+	common.ResultSuccess(results, c)
 }

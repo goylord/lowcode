@@ -12,5 +12,6 @@ func TableEntityRouterRegistry(engine *gin.Engine) {
 		group.POST("/add", services.TableEntityLAdd)
 		group.POST("/update", services.TableEntityUpdate)
 		group.POST("/delete/:id", services.TableEntityDelete)
+		group.POST("/get/:id", services.TableEntityGetOne)
 	}
 }

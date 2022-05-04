@@ -13,7 +13,7 @@ const {{.TableName}}TableName string = "{{.TableName}}"
 
 type {{.TableName}} struct {
   {{range $i, $v := .Fields}}
-  {{$v.StructName}} {{$v.FieldType}} `form:"{{$v.SourceName}}" json:"{{$v.SourceName}}"`
+  {{$v.StructName}} {{$v.FieldType}} `form:"{{$v.SourceName}}" json:"{{$v.SourceName}}"{{$v.Conditions}}`
   {{end}}
 }
 
@@ -50,6 +50,15 @@ func (table *{{.TableName}}) Delete() error {
 	if affected == 0 {
 		return errors.New("没有找到删除的数据")
 	}
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (table *{{.TableName}}) GetOne(id string) error {
+	engine := databases.GetXormEngine()
+	_, err := engine.Table({{.TableName}}TableName).Where("id = ?", id).Desc("id").Get(table)
 	if err != nil {
 		return err
 	}
